@@ -28,19 +28,44 @@ describe("requests.js", () => {
       },
     ];
 
-    it("should make a GET request to the appropriate URL", async () => {
-      // Write code here
-      expect(1).toBe(2);
+    beforeEach(() => {
+      jest.spyOn(axios, "get");
     });
 
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+   
+
     it("should return a list of constellations with fewer than 10 stars with planets", async () => {
-      // Write code here
-      expect(1).toBe(2);
+      axios.get.mockImplementation(() => Promise.resolve({data}));
+
+      const response = await index();
+
+      const expected = data.slice(0, 2);
+      expect(response).toEqual(expected);
+
     });
 
     it("should log an error to the console", async () => {
-      // Write code here
-      expect(1).toBe(2);
+      axios.get.mockImplementation(() => Promise.reject(new Error("Request failed.")));
+
+      jest.spyOn(console, "error");
+
+      await index();
+
+      expect(console.error).toHaveBeenCalledWith("Request failed.");
+
+    });
+
+    it("should make a GET request to the appropriate URL", async () => {
+    
+      await index();
+      
+      const expectedURL = `${BASE_URL}/constellations`;
+      expect(axios.get).toHaveBeenCalledWith(expectedURL);
+    
     });
   });
 });
